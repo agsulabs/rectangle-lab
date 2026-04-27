@@ -1,18 +1,18 @@
 
 def get_user_input(text):
-
-    value = input(text).replace(",", ".")
-    try:
-        number = float(value)
-    except ValueError:
-        print("Ungültige Eingabe. Bitte geben Sie eine Zahl ein.")
-        return get_user_input(text)
-    
-    if number <= 0:
-        print ("Ungültige Eingabe. Bitte geben Sie eine positive Zahl ein.")
-        return get_user_input(text)
-    
-    return number
+    while True:
+        value = input(text).replace(",", ".")
+        try:
+            number = float(value)
+            
+        except ValueError:
+            print("Ungültige Eingabe. Bitte geben Sie eine Zahl ein.")
+            continue
+        if number <= 0:
+            print ("Ungültige Eingabe. Bitte geben Sie eine positive Zahl ein.")
+            continue
+        
+        return number
 
 def calculate():
     length = get_user_input("\nGeben Sie die Länge des Rechtecks ein: ")
