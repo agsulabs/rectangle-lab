@@ -1,3 +1,14 @@
+class Rectangle:
+    def __init__(self, length, width):
+        self.length = length
+        self.width = width
+    
+    def perimeter(self):
+        return 2 * (self.length + self.width)
+
+    def area(self):
+        return self.length * self.width
+    
 
 def get_user_input(text):
     while True:
@@ -17,9 +28,9 @@ def get_user_input(text):
 def calculate():
     length = get_user_input("\nGeben Sie die Länge des Rechtecks ein: ")
     width = get_user_input("\nGeben Sie die Breite des Rechtecks ein: ")
-
-    perimeter = 2 * (length + width)
-    area = length * width
+    rc = Rectangle(length, width)   
+    perimeter = rc.perimeter()
+    area = rc.area()
     print ("\n---------\n")
     print (f"Der Umfang des Rechtecks beträgt: {perimeter}")
     print (f"Die Fläche des Rechtecks beträgt: {area}")
