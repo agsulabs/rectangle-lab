@@ -1,29 +1,6 @@
-class Rectangle:
-    def __init__(self, length, width):
-        self.length = length
-        self.width = width
-    
-    def perimeter(self):
-        return 2 * (self.length + self.width)
+from rectangle import Rectangle
+from input_handler import get_user_input
 
-    def area(self):
-        return self.length * self.width
-    
-
-def get_user_input(text):
-    while True:
-        value = input(text).replace(",", ".")
-        try:
-            number = float(value)
-            
-        except ValueError:
-            print("Ungültige Eingabe. Bitte geben Sie eine Zahl ein.")
-            continue
-        if number <= 0:
-            print ("Ungültige Eingabe. Bitte geben Sie eine positive Zahl ein.")
-            continue
-        
-        return number
 
 def calculate():
     length = get_user_input("\nGeben Sie die Länge des Rechtecks ein: ")
