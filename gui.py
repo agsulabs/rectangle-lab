@@ -43,14 +43,78 @@ def menu_button(overlay,list, menu_frame, canvas):
         )   
         button.place(relx=0.5, rely=0.5, x=rnd_x, y=rnd_y)
 
-def rectangle():
-    pass
+def rectangle(canvas, frame):
+    x0 = 100
+    y0 = 100
+    width = read_values(frame.entry_width)
+    height = read_values(frame.entry_height)
 
-def triangle():
-    pass
+    if width is None or height is None:
+        return
+    else:
+        x1 = x0 + width * 10
+        y1 = y0 + height * 10
 
-def circle():
-    pass
+        canvas.create_rectangle(x0, y0, x1, y1, outline=accent_color, width=2)
+
+def triangle(canvas, frame):
+    left = read_values(frame.entry_left)
+    right = read_values(frame.entry_right)
+    base = read_values(frame.entry_base)
+
+    if left is None or right is None or base is None:
+        return
+    else:
+        scale = 2
+
+        x0 = 100
+        y0 = 300
+
+        a = left * scale
+        b = right * scale
+        c = base * scale
+
+        # проверка, что треугольник возможен
+        if a + b <= c or a + c <= b or b + c <= a:
+            return
+
+        x1 = x0 + c
+        y1 = y0
+
+        x2 = x0 + (a**2 - b**2 + c**2) / (2 * c)
+        height = (a**2 - (x2 - x0)**2) ** 0.5
+        y2 = y0 - height
+
+        canvas.create_polygon(
+            x0, y0,
+            x1, y1,
+            x2, y2,
+            outline=accent_color,
+            fill="",
+            width=2
+        )
+
+def circle(canvas, frame):
+    radius = read_values(frame.entry_radius)
+
+    if radius is None:
+        return
+    else:
+        scale = 10
+
+        x0 = 100
+        y0 = 100
+
+        r = radius * scale
+
+        canvas.create_oval(
+            x0,
+            y0,
+            x0 + r * 2,
+            y0 + r * 2,
+            outline=accent_color,
+            width=2
+        )
 
 def menu(window, menu_frame, canvas):
     overlay = tk.Canvas(window, bg=canvas_bg_color)
@@ -138,84 +202,18 @@ def update_draw(canvas, shape, frame):
     canvas_draw(canvas, shape, frame)    
 
 def canvas_draw(canvas, shape, frame):
-    x0, y0 = 50, 50
-
     canvas.delete("all")
 
     if shape is None:
         return
 
     if shape == "Rechteck":
-        width = read_values(frame.entry_width)
-        height = read_values(frame.entry_height)
-
-        if width is None or height is None:
-            return
-        else:
-            x1 = x0 + width * 10
-            y1 = y0 + height * 10
-
-            canvas.create_rectangle(x0, y0, x1, y1, outline=accent_color, width=2)
+        rectangle(canvas, frame)
+    if shape == "Dreieck":
+        triangle(canvas, frame)
+    if shape == "Kreis":
+        circle(canvas, frame)
         
-    elif shape == "Dreieck":
-        left = read_values(frame.entry_left)
-        right = read_values(frame.entry_right)
-        base = read_values(frame.entry_base)
-
-        if left is None or right is None or base is None:
-            return
-        else:
-            scale = 2
-
-            x0 = 100
-            y0 = 300
-
-            a = left * scale
-            b = right * scale
-            c = base * scale
-
-            # проверка, что треугольник возможен
-            if a + b <= c or a + c <= b or b + c <= a:
-                return
-
-            x1 = x0 + c
-            y1 = y0
-
-            x2 = x0 + (a**2 - b**2 + c**2) / (2 * c)
-            height = (a**2 - (x2 - x0)**2) ** 0.5
-            y2 = y0 - height
-
-            canvas.create_polygon(
-                x0, y0,
-                x1, y1,
-                x2, y2,
-                outline=accent_color,
-                fill="",
-                width=2
-            )
-
-    elif shape == "Kreis":
-        radius = read_values(frame.entry_radius)
-
-        if radius is None:
-            return
-        else:
-            scale = 10
-
-            x0 = 100
-            y0 = 100
-
-            r = radius * scale
-
-            canvas.create_oval(
-                x0,
-                y0,
-                x0 + r * 2,
-                y0 + r * 2,
-                outline=accent_color,
-                width=2
-            )
-
 def run_app():
     window = tk.Tk()
     window.title("Rectangle Lab")
