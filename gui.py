@@ -1,5 +1,4 @@
 import tkinter as tk
-import random
 
 header_bg_color = "#1A1B26"
 body_bg_color = "#24283B"
@@ -18,7 +17,7 @@ def clear_frame(frame):
     for widget in frame.winfo_children():
         widget.destroy()
 
-def menu_button_cordinate(x, y):
+def menu_button_coordinate(x, y):
     btn_x = x
     btn_y = y+50
     return btn_x, btn_y
@@ -28,11 +27,11 @@ def on_button_click(shape, overlay, menu_frame, canvas):
     shape_param(menu_frame, shape, canvas)
     close_menu(overlay)
         
-def menu_button(overlay,list, menu_frame, canvas):
+def menu_button(overlay, shapes, menu_frame, canvas):
     rnd_x = overlay.winfo_width() / 2 - 50
     rnd_y = overlay.winfo_height() / 2 -100
-    for index, text in enumerate(list):
-        rnd_x, rnd_y = menu_button_cordinate(rnd_x, rnd_y)
+    for index, text in enumerate(shapes):
+        rnd_x, rnd_y = menu_button_coordinate(rnd_x, rnd_y)
         button = tk.Button(
             overlay,
             text=text,
@@ -74,7 +73,7 @@ def triangle(canvas, frame):
         b = right * scale
         c = base * scale
 
-        # проверка, что треугольник возможен
+        # prüfen, ob das Dreieck möglich ist
         if a + b <= c or a + c <= b or b + c <= a:
             return
 
@@ -133,69 +132,37 @@ def read_values(entry):
     except ValueError:
         return None
 
+def input_field(frame, field_name, field_text, column, canvas, shape):
+    var_name =  field_name + "_var"
+    entry_name = "entry_" + field_name
+    setattr(frame, var_name, tk.StringVar())
+    var = getattr(frame, var_name)
+
+    label = tk.Label(frame, text=field_text, bg=menu_bg_color, fg=text_color, font=("Arial", 10))
+    label.grid (row=0, column=column, padx=5, pady=5)
+    entry = tk.Entry(frame, width=8, textvariable=var)
+    entry.grid(row=0, column=column+1, padx=5, pady=5)
+
+    setattr(frame, entry_name, entry)
+
+    var.trace_add("write", lambda *args: update_draw(canvas, shape, frame))
+
+    return entry
+
 def shape_param(frame, shape = None, canvas = None):
     if shape == "Rechteck":
 
-        frame.width_var = tk.StringVar()
-        frame.height_var = tk.StringVar()
-
-        frame.label_width = tk.Label(frame, text="Breite:", bg=menu_bg_color, fg=text_color, font=("Arial", 10))
-        frame.label_width.grid(row=0, column=0, padx=5, pady=5)
-
-        frame.entry_width = tk.Entry(frame, width=8, textvariable=frame.width_var)
-        frame.entry_width.grid(row=0, column=1, padx=5, pady=5)
-
-        frame.label_height = tk.Label(frame, text="Höhe:", bg=menu_bg_color, fg=text_color, font=("Arial", 10))
-        frame.label_height.grid(row=0, column=2, padx=5, pady=5)
-
-        frame.entry_height = tk.Entry(frame, width=8, textvariable=frame.height_var)
-        frame.entry_height.grid(row=0, column=3, padx=5, pady=5)
-
-
-
-        frame.width_var.trace_add("write", lambda *args: update_draw(canvas, shape, frame))
-        frame.height_var.trace_add("write", lambda *args: update_draw(canvas, shape, frame))
-
+        input_field(frame, "width", "Breite:", 0, canvas, shape)
+        input_field(frame, "height", "Höhe:", 2, canvas, shape)
 
     elif shape == "Dreieck":
 
-        frame.left_var = tk.StringVar()
-        frame.right_var = tk.StringVar()
-        frame.base_var = tk.StringVar()
-        
-        frame.label_left = tk.Label(frame, text="Linke Seite:", bg=menu_bg_color, fg=text_color, font=("Arial", 10))
-        frame.label_left.grid(row=0, column=0, padx=5, pady=5)
-
-        frame.entry_left = tk.Entry(frame, width=8, textvariable=frame.left_var)
-        frame.entry_left.grid(row=0, column=1, padx=5, pady=5)
-
-        frame.label_right = tk.Label(frame, text="Rechte Seite:", bg=menu_bg_color, fg=text_color, font=("Arial", 10))
-        frame.label_right.grid(row=0, column=2, padx=5, pady=5)
-
-        frame.entry_right = tk.Entry(frame, width=8, textvariable=frame.right_var)
-        frame.entry_right.grid(row=0, column=3, padx=5, pady=5)
-
-        frame.label_base = tk.Label(frame, text="Basis:", bg=menu_bg_color, fg=text_color, font=("Arial", 10))
-        frame.label_base.grid(row=0, column=4, padx=5, pady=5)
-
-        frame.entry_base = tk.Entry(frame, width=8, textvariable=frame.base_var)
-        frame.entry_base.grid(row=0, column=5, padx=5, pady=5)
-
-        frame.left_var.trace_add("write", lambda *args: update_draw(canvas, shape, frame))
-        frame.right_var.trace_add("write", lambda *args: update_draw(canvas, shape, frame))   
-        frame.base_var.trace_add("write", lambda *args: update_draw(canvas, shape, frame))
-
+        input_field(frame, "left", "Linke Seite:", 0, canvas, shape)
+        input_field(frame, "right", "Rechte Seite:", 2, canvas, shape)
+        input_field(frame, "base", "Basis:", 4, canvas, shape)
 
     elif shape == "Kreis":
-        frame.radius_var = tk.StringVar()
-
-        frame.label_radius = tk.Label(frame, text="Radius:", bg=menu_bg_color, fg=text_color, font=("Arial", 10))
-        frame.label_radius.grid(row=0, column=0, padx=5, pady=5)
-
-        frame.entry_radius = tk.Entry(frame, width=8, textvariable=frame.radius_var)
-        frame.entry_radius.grid(row=0, column=1, padx=5, pady=5)
-
-        frame.radius_var.trace_add("write", lambda *args: update_draw(canvas, shape, frame))
+        input_field(frame, "radius", "Radius:", 0, canvas, shape)
 
 def update_draw(canvas, shape, frame):
        
@@ -207,11 +174,11 @@ def canvas_draw(canvas, shape, frame):
     if shape is None:
         return
 
-    if shape == "Rechteck":
+    elif shape == "Rechteck":
         rectangle(canvas, frame)
-    if shape == "Dreieck":
+    elif shape == "Dreieck":
         triangle(canvas, frame)
-    if shape == "Kreis":
+    elif shape == "Kreis":
         circle(canvas, frame)
         
 def run_app():
