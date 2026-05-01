@@ -22,12 +22,12 @@ def menu_button_coordinate(x, y):
     btn_y = y+50
     return btn_x, btn_y
 
-def on_button_click(shape, overlay, menu_frame, canvas):
+def on_button_click(shape, overlay, menu_frame, canvas, area_val, perimeter_val):
     clear_frame(menu_frame)
-    shape_param(menu_frame, shape, canvas)
+    shape_param(menu_frame, shape, canvas, area_val, perimeter_val)
     close_menu(overlay)
         
-def menu_button(overlay, shapes, menu_frame, canvas):
+def menu_button(overlay, shapes, menu_frame, canvas, area_val, perimeter_val):
     rnd_x = overlay.winfo_width() / 2 - 50
     rnd_y = overlay.winfo_height() / 2 -100
     for index, text in enumerate(shapes):
@@ -35,7 +35,7 @@ def menu_button(overlay, shapes, menu_frame, canvas):
         button = tk.Button(
             overlay,
             text=text,
-            command=lambda shape=text: on_button_click(shape, overlay, menu_frame, canvas),
+            command=lambda shape=text: on_button_click(shape, overlay, menu_frame, canvas, area_val, perimeter_val),
             bg=menu_bg_color,
             fg=text_color,
             font=("Arial", 12, "bold")
@@ -115,13 +115,13 @@ def circle(canvas, frame):
             width=2
         )
 
-def menu(window, menu_frame, canvas):
+def menu(window, menu_frame, canvas, area_val, perimeter_val):
     overlay = tk.Canvas(window, bg=canvas_bg_color)
     overlay.place(x=0, y=0, relwidth=1, relheight=1)
     overlay.bind("<Button-1>", lambda event: close_menu(overlay, menu_frame))
     overlay.tk.call("raise", overlay._w)
     menu_list = ["Rechteck", "Dreieck", "Kreis"]
-    menu_button(overlay, menu_list, menu_frame, canvas)
+    menu_button(overlay, menu_list, menu_frame, canvas, area_val, perimeter_val)
 
 def read_values(entry):
     try:
@@ -132,7 +132,7 @@ def read_values(entry):
     except ValueError:
         return None
 
-def input_field(frame, field_name, field_text, column, canvas, shape):
+def input_field(frame, field_name, field_text, column, canvas, shape, area_val, perimeter_val):
     var_name =  field_name + "_var"
     entry_name = "entry_" + field_name
     setattr(frame, var_name, tk.StringVar())
@@ -145,28 +145,29 @@ def input_field(frame, field_name, field_text, column, canvas, shape):
 
     setattr(frame, entry_name, entry)
 
-    var.trace_add("write", lambda *args: update_draw(canvas, shape, frame))
+    var.trace_add("write", lambda *args: update_draw(canvas, shape, frame, area_val, perimeter_val))
 
     return entry
 
-def shape_param(frame, shape = None, canvas = None):
+def shape_param(frame, shape = None, canvas = None, area_val = None, perimeter_val = None):
     if shape == "Rechteck":
 
-        input_field(frame, "width", "Breite:", 0, canvas, shape)
-        input_field(frame, "height", "Höhe:", 2, canvas, shape)
+        input_field(frame, "width", "Breite:", 0, canvas, shape, area_val, perimeter_val)
+        input_field(frame, "height", "Höhe:", 2, canvas, shape, area_val, perimeter_val)
 
     elif shape == "Dreieck":
 
-        input_field(frame, "left", "Linke Seite:", 0, canvas, shape)
-        input_field(frame, "right", "Rechte Seite:", 2, canvas, shape)
-        input_field(frame, "base", "Basis:", 4, canvas, shape)
+        input_field(frame, "left", "Linke Seite:", 0, canvas, shape, area_val, perimeter_val)
+        input_field(frame, "right", "Rechte Seite:", 2, canvas, shape, area_val, perimeter_val)
+        input_field(frame, "base", "Basis:", 4, canvas, shape, area_val, perimeter_val)
 
     elif shape == "Kreis":
-        input_field(frame, "radius", "Radius:", 0, canvas, shape)
+        input_field(frame, "radius", "Radius:", 0, canvas, shape, area_val, perimeter_val)
 
-def update_draw(canvas, shape, frame):
+def update_draw(canvas, shape, frame, area_val, perimeter_val):
        
-    canvas_draw(canvas, shape, frame)    
+    canvas_draw(canvas, shape, frame)
+    update_footer(frame, shape, area_val, perimeter_val)    
 
 def canvas_draw(canvas, shape, frame):
     canvas.delete("all")
@@ -180,7 +181,64 @@ def canvas_draw(canvas, shape, frame):
         triangle(canvas, frame)
     elif shape == "Kreis":
         circle(canvas, frame)
+
+def update_footer(frame, shape, area_val, perimeter_val):
+
+    perimeter = calculate_perimeter(frame, shape)
+    area = calculate_area(frame, shape)
+
+    if area is not None and perimeter is not None:
+        area_val.set(f"Fläche: {area:.2f}")
+        perimeter_val.set(f"Umfang: {perimeter:.2f}")
+    else:
+        area_val.set("Fläche: -")
+        perimeter_val.set("Umfang: -")
         
+
+def calculate_area(frame, shape):
+    if shape == "Rechteck":
+        w = read_values(frame.entry_width)
+        h = read_values(frame.entry_height)
+        if w is not None and h is not None:
+            area = w * h
+            return area
+
+    elif shape == "Dreieck":
+        a = read_values(frame.entry_left)
+        b = read_values(frame.entry_right)
+        c = read_values(frame.entry_base)
+
+        if a is not None and b is not None and c is not None:
+            s = (a + b + c) / 2
+            area = (s * (s - a) * (s - b) * (s - c)) ** 0.5
+            return area
+    elif shape == "Kreis":
+        r = read_values(frame.entry_radius)
+        if r is not None:
+            area = 3.14159 * r ** 2
+            return area
+
+def calculate_perimeter(frame, shape):
+    if shape == "Rechteck":
+        w = read_values(frame.entry_width)
+        h = read_values(frame.entry_height)
+        if w is not None and h is not None:
+            perimeter = 2 * (w + h)
+            return perimeter
+    elif shape == "Dreieck":
+        a = read_values(frame.entry_left)
+        b = read_values(frame.entry_right)
+        c = read_values(frame.entry_base)
+
+        if a is not None and b is not None and c is not None:
+            perimeter = a + b + c
+            return perimeter
+    elif shape == "Kreis":
+        r = read_values(frame.entry_radius)
+        if r is not None:
+            perimeter = 2 * 3.14159 * r
+            return perimeter
+
 def run_app():
     window = tk.Tk()
     window.title("Rectangle Lab")
@@ -215,13 +273,31 @@ def run_app():
     body_frame.grid_rowconfigure(0, weight=1)
 
     footer_frame = tk.Frame(window, bg=header_bg_color, height=50)
+    area_var = tk.StringVar(value="Fläche: -")
+    perimeter_var = tk.StringVar(value="Umfang: -")
+
+    area_label = tk.Label(
+        footer_frame,
+        textvariable=area_var,
+        bg=header_bg_color,
+        fg=text_color
+    )
+    area_label.grid(row=0, column=0, padx=20, pady=15)
+
+    perimeter_label = tk.Label(
+        footer_frame,
+        textvariable=perimeter_var,
+        bg=header_bg_color,
+        fg=text_color
+    )
+    perimeter_label.grid(row=0, column=1, padx=20, pady=15)
     footer_frame.grid(row=2, column=0, sticky="ew")
     footer_frame.grid_propagate(False)
 
     canvas = tk.Canvas(body_frame, bg=canvas_bg_color)
     canvas.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
 
-    button = tk.Button(header_frame, text="Figur auswählen", command=lambda: menu(window, menu_frame, canvas), bg=accent_color, fg=body_bg_color, font=("Arial", 12, "bold"))
+    button = tk.Button(header_frame, text="Figur auswählen", command=lambda: menu(window, menu_frame, canvas, area_var, perimeter_var), bg=accent_color, fg=body_bg_color, font=("Arial", 12, "bold"))
     button.grid(row=1, column=1, pady=10, padx=5)
 
     window.mainloop()
