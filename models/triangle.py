@@ -14,6 +14,19 @@ class Triangle(Shape):
             and self.right_side + self.base > self.left_side
         )
 
+    def points(self):
+        if not self.is_valid():
+            return None
+
+        return [
+            (0, 0),
+            (self.base, 0),
+            (
+                (self.left_side**2 - self.right_side**2 + self.base**2) / (2 * self.base),
+                (self.left_side**2 - ((self.left_side**2 - self.right_side**2 + self.base**2) / (2 * self.base))**2) ** 0.5
+            )
+        ]
+    
     def area(self):
         if not self.is_valid():
             return None

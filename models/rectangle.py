@@ -9,6 +9,19 @@ class Rectangle(Shape):
     def is_valid(self):
         return self.width > 0 and self.height > 0
 
+    def points(self):
+
+        if not self.is_valid():
+            return None
+
+        return [
+            (0, 0),
+            (self.width, 0),
+            (self.width, self.height),
+            (0, self.height)
+        ]
+
+
     def area(self):
         if not self.is_valid():
             return None

@@ -37,8 +37,8 @@ def on_button_click(shape, overlay, menu_frame, canvas, area_val, perimeter_val)
     shape_param(menu_frame, shape, canvas, area_val, perimeter_val)
     close_menu(overlay)
         
-def menu(window, menu_frame, canvas, area_val, perimeter_val):
-    overlay = tk.Canvas(window, bg=color.CANVAS_BG_COLOR)
+def menu(root, menu_frame, canvas, area_val, perimeter_val):
+    overlay = tk.Canvas(root, bg=color.CANVAS_BG_COLOR)
     overlay.place(x=0, y=0, relwidth=1, relheight=1)
     overlay.bind("<Button-1>", lambda event: close_menu(overlay, menu_frame))
     overlay.tk.call("raise", overlay._w)

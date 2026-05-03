@@ -1,1 +1,1 @@
-from .menu import menu
+from .main_window import MainWindow

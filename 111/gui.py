@@ -194,7 +194,6 @@ def update_footer(frame, shape, area_val, perimeter_val):
         area_val.set("Fläche: -")
         perimeter_val.set("Umfang: -")
         
-
 def calculate_area(frame, shape):
     if shape == "Rechteck":
         w = read_values(frame.entry_width)
