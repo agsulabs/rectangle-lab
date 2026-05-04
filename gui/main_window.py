@@ -1,7 +1,4 @@
-import tkinter as tk
 
-from config import color
-from .menu import menu
 from .layout.header import build_header
 from .layout.body import build_body
 from .layout.footer import build_footer

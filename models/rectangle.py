@@ -1,4 +1,4 @@
-from models.shape import Shape
+from .shape import Shape
 
 
 class Rectangle(Shape):
